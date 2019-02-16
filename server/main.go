@@ -2,10 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 )
 
@@ -13,6 +15,7 @@ var (
 	iteration = 1
 	// maps image number to a set of user adresses that voted for it
 	votes = make(map[int]map[string]struct{})
+	port  = flag.String("port", "8080", "The port that the server will bind on")
 )
 
 type voteMessage struct {
@@ -22,12 +25,18 @@ type voteMessage struct {
 }
 
 func main() {
+	flag.Parse()
 
 	content, err := ioutil.ReadFile("iteration")
 	if err == nil {
 		iteration, err = strconv.Atoi(string(content))
 		if err != nil {
 			log.Fatalf("expecting integer defined in iteration file, instead got %s", string(content))
+		}
+	} else {
+		err := ioutil.WriteFile("iteration", []byte(strconv.Itoa(iteration)), os.ModePerm)
+		if err != nil {
+			log.Fatalf("could not persist iteration file: %v", err)
 		}
 	}
 
@@ -46,15 +55,16 @@ func main() {
 		fmt.Printf("%s\n", string(data))
 	*/
 
-	bindAddress := "localhost:8080"
+	bindAddress := fmt.Sprintf("localhost:%s", *port)
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("images"))))
 	http.HandleFunc("/iteration", handleIteration)
 	http.HandleFunc("/vote", handleVotes)
 
+	fmt.Printf("Current iteration: %d\n", iteration)
 	fmt.Printf("Serving images at %s/images/<iteration>/<image>\n", bindAddress)
 	fmt.Printf("Serving iteration at %s/iteration\n", bindAddress)
 	fmt.Printf("Accepting votes at %s/vote\n", bindAddress)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(bindAddress, nil))
 }
 
 func handleIteration(w http.ResponseWriter, r *http.Request) {
