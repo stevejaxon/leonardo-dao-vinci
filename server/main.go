@@ -54,10 +54,14 @@ func main() {
 
 		fmt.Printf("%s\n", string(data))
 	*/
+	imageHandler := http.StripPrefix("/images/", http.FileServer(http.Dir("images")))
+	imageHandlerFunc := func(w http.ResponseWriter, r *http.Request) {
+		imageHandler.ServeHTTP(w, r)
+	}
 
 	bindAddress := fmt.Sprintf("localhost:%s", *port)
-	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("images"))))
-	http.HandleFunc("/iteration", handleIteration)
+	http.HandleFunc("/images/", addCors(imageHandlerFunc))
+	http.HandleFunc("/iteration", addCors(handleIteration))
 	http.HandleFunc("/vote", handleVotes)
 
 	fmt.Printf("Current iteration: %d\n", iteration)
@@ -65,6 +69,13 @@ func main() {
 	fmt.Printf("Serving iteration at %s/iteration\n", bindAddress)
 	fmt.Printf("Accepting votes at %s/vote\n", bindAddress)
 	log.Fatal(http.ListenAndServe(bindAddress, nil))
+}
+
+func addCors(handleFunc func(w http.ResponseWriter, r *http.Request)) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		handleFunc(w, r)
+	}
 }
 
 func handleIteration(w http.ResponseWriter, r *http.Request) {
