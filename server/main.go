@@ -10,6 +10,8 @@ import (
 	"os"
 	"strconv"
 	"sync"
+
+	"github.com/casinocats/leonardo-dao-vinci/server/dvtoken"
 )
 
 var (
@@ -176,4 +178,12 @@ func (s *atomicInt) Inc() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.val++
+}
+
+// This is just here to ensure stuff is compiling
+func mintToken() {
+	t := dvtoken.DaoVinciToken{
+		DaoVinciTokenCaller: dvtoken.DaoVinciTokenCaller{},
+	}
+	println(&t)
 }
