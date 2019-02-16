@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 )
 
@@ -29,6 +30,11 @@ func main() {
 		if err != nil {
 			log.Fatalf("expecting integer defined in iteration file, instead got %s", string(content))
 		}
+	} else {
+		err := ioutil.WriteFile("iteration", []byte(strconv.Itoa(iteration)), os.ModePerm)
+		if err != nil {
+			log.Fatalf("could not persist iteration file: %v", err)
+		}
 	}
 
 	/*
@@ -51,6 +57,7 @@ func main() {
 	http.HandleFunc("/iteration", handleIteration)
 	http.HandleFunc("/vote", handleVotes)
 
+	fmt.Printf("Current iteration: %d\n", iteration)
 	fmt.Printf("Serving images at %s/images/<iteration>/<image>\n", bindAddress)
 	fmt.Printf("Serving iteration at %s/iteration\n", bindAddress)
 	fmt.Printf("Accepting votes at %s/vote\n", bindAddress)
