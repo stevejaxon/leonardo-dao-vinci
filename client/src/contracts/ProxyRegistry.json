@@ -23,22 +23,22 @@
   ],
   "bytecode": "0x608060405234801561001057600080fd5b50610136806100206000396000f3fe608060405260043610610041576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063c455279114610046575b600080fd5b34801561005257600080fd5b506100956004803603602081101561006957600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506100d7565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b60006020528060005260406000206000915054906101000a900473ffffffffffffffffffffffffffffffffffffffff168156fea165627a7a723058203bc2e2a9e796d162a8e48e873ac8ff1afc4200721de244a6338d4de554e205940029",
   "deployedBytecode": "0x608060405260043610610041576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063c455279114610046575b600080fd5b34801561005257600080fd5b506100956004803603602081101561006957600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506100d7565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b60006020528060005260406000206000915054906101000a900473ffffffffffffffffffffffffffffffffffffffff168156fea165627a7a723058203bc2e2a9e796d162a8e48e873ac8ff1afc4200721de244a6338d4de554e205940029",
-  "sourceMap": "63:87:3:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;63:87:3;;;;;;;",
-  "deployedSourceMap": "63:87:3:-;;;;;;;;;;;;;;;;;;;;;;;;92:55;;8:9:-1;5:2;;;30:1;27;20:12;5:2;92:55:3;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;92:55:3;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o",
+  "sourceMap": "63:87:4:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;63:87:4;;;;;;;",
+  "deployedSourceMap": "63:87:4:-;;;;;;;;;;;;;;;;;;;;;;;;92:55;;8:9:-1;5:2;;;30:1;27;20:12;5:2;92:55:4;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;92:55:4;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o",
   "source": "pragma solidity ^0.5.0;\n\nimport \"./OwnableDelegateProxy.sol\";\n\ncontract ProxyRegistry {\n    mapping(address => OwnableDelegateProxy) public proxies;\n}\n",
   "sourcePath": "/Users/stephenjackson/Code/Ethereum/leonardo-dao-vinci/contracts/ProxyRegistry.sol",
   "ast": {
     "absolutePath": "/Users/stephenjackson/Code/Ethereum/leonardo-dao-vinci/contracts/ProxyRegistry.sol",
     "exportedSymbols": {
       "ProxyRegistry": [
-        143
+        183
       ]
     },
-    "id": 144,
+    "id": 184,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 137,
+        "id": 177,
         "literals": [
           "solidity",
           "^",
@@ -46,16 +46,16 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:3"
+        "src": "0:23:4"
       },
       {
         "absolutePath": "/Users/stephenjackson/Code/Ethereum/leonardo-dao-vinci/contracts/OwnableDelegateProxy.sol",
         "file": "./OwnableDelegateProxy.sol",
-        "id": 138,
+        "id": 178,
         "nodeType": "ImportDirective",
-        "scope": 144,
-        "sourceUnit": 136,
-        "src": "25:36:3",
+        "scope": 184,
+        "sourceUnit": 176,
+        "src": "25:36:4",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -65,53 +65,53 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 143,
+        "id": 183,
         "linearizedBaseContracts": [
-          143
+          183
         ],
         "name": "ProxyRegistry",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 142,
+            "id": 182,
             "name": "proxies",
             "nodeType": "VariableDeclaration",
-            "scope": 143,
-            "src": "92:55:3",
+            "scope": 183,
+            "src": "92:55:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_mapping$_t_address_$_t_contract$_OwnableDelegateProxy_$135_$",
+              "typeIdentifier": "t_mapping$_t_address_$_t_contract$_OwnableDelegateProxy_$175_$",
               "typeString": "mapping(address => contract OwnableDelegateProxy)"
             },
             "typeName": {
-              "id": 141,
+              "id": 181,
               "keyType": {
-                "id": 139,
+                "id": 179,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
-                "src": "100:7:3",
+                "src": "100:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_address",
                   "typeString": "address"
                 }
               },
               "nodeType": "Mapping",
-              "src": "92:40:3",
+              "src": "92:40:4",
               "typeDescriptions": {
-                "typeIdentifier": "t_mapping$_t_address_$_t_contract$_OwnableDelegateProxy_$135_$",
+                "typeIdentifier": "t_mapping$_t_address_$_t_contract$_OwnableDelegateProxy_$175_$",
                 "typeString": "mapping(address => contract OwnableDelegateProxy)"
               },
               "valueType": {
                 "contractScope": null,
-                "id": 140,
+                "id": 180,
                 "name": "OwnableDelegateProxy",
                 "nodeType": "UserDefinedTypeName",
-                "referencedDeclaration": 135,
-                "src": "111:20:3",
+                "referencedDeclaration": 175,
+                "src": "111:20:4",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_contract$_OwnableDelegateProxy_$135",
+                  "typeIdentifier": "t_contract$_OwnableDelegateProxy_$175",
                   "typeString": "contract OwnableDelegateProxy"
                 }
               }
@@ -120,24 +120,24 @@
             "visibility": "public"
           }
         ],
-        "scope": 144,
-        "src": "63:87:3"
+        "scope": 184,
+        "src": "63:87:4"
       }
     ],
-    "src": "0:151:3"
+    "src": "0:151:4"
   },
   "legacyAST": {
     "absolutePath": "/Users/stephenjackson/Code/Ethereum/leonardo-dao-vinci/contracts/ProxyRegistry.sol",
     "exportedSymbols": {
       "ProxyRegistry": [
-        143
+        183
       ]
     },
-    "id": 144,
+    "id": 184,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 137,
+        "id": 177,
         "literals": [
           "solidity",
           "^",
@@ -145,16 +145,16 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:3"
+        "src": "0:23:4"
       },
       {
         "absolutePath": "/Users/stephenjackson/Code/Ethereum/leonardo-dao-vinci/contracts/OwnableDelegateProxy.sol",
         "file": "./OwnableDelegateProxy.sol",
-        "id": 138,
+        "id": 178,
         "nodeType": "ImportDirective",
-        "scope": 144,
-        "sourceUnit": 136,
-        "src": "25:36:3",
+        "scope": 184,
+        "sourceUnit": 176,
+        "src": "25:36:4",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -164,53 +164,53 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 143,
+        "id": 183,
         "linearizedBaseContracts": [
-          143
+          183
         ],
         "name": "ProxyRegistry",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 142,
+            "id": 182,
             "name": "proxies",
             "nodeType": "VariableDeclaration",
-            "scope": 143,
-            "src": "92:55:3",
+            "scope": 183,
+            "src": "92:55:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_mapping$_t_address_$_t_contract$_OwnableDelegateProxy_$135_$",
+              "typeIdentifier": "t_mapping$_t_address_$_t_contract$_OwnableDelegateProxy_$175_$",
               "typeString": "mapping(address => contract OwnableDelegateProxy)"
             },
             "typeName": {
-              "id": 141,
+              "id": 181,
               "keyType": {
-                "id": 139,
+                "id": 179,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
-                "src": "100:7:3",
+                "src": "100:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_address",
                   "typeString": "address"
                 }
               },
               "nodeType": "Mapping",
-              "src": "92:40:3",
+              "src": "92:40:4",
               "typeDescriptions": {
-                "typeIdentifier": "t_mapping$_t_address_$_t_contract$_OwnableDelegateProxy_$135_$",
+                "typeIdentifier": "t_mapping$_t_address_$_t_contract$_OwnableDelegateProxy_$175_$",
                 "typeString": "mapping(address => contract OwnableDelegateProxy)"
               },
               "valueType": {
                 "contractScope": null,
-                "id": 140,
+                "id": 180,
                 "name": "OwnableDelegateProxy",
                 "nodeType": "UserDefinedTypeName",
-                "referencedDeclaration": 135,
-                "src": "111:20:3",
+                "referencedDeclaration": 175,
+                "src": "111:20:4",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_contract$_OwnableDelegateProxy_$135",
+                  "typeIdentifier": "t_contract$_OwnableDelegateProxy_$175",
                   "typeString": "contract OwnableDelegateProxy"
                 }
               }
@@ -219,11 +219,11 @@
             "visibility": "public"
           }
         ],
-        "scope": 144,
-        "src": "63:87:3"
+        "scope": 184,
+        "src": "63:87:4"
       }
     ],
-    "src": "0:151:3"
+    "src": "0:151:4"
   },
   "compiler": {
     "name": "solc",
@@ -231,7 +231,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-02-16T18:37:58.225Z",
+  "updatedAt": "2019-02-16T19:56:22.121Z",
   "devdoc": {
     "methods": {}
   },
