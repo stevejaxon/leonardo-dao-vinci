@@ -31,17 +31,20 @@ func main() {
 		}
 	}
 
-	v := &voteMessage{
-		UserAddress: "0x931d387731bbbc988b312206c74f77d004d6b84b",
-		Period:      2,
-		Images:      []int{2, 5, 6, 7, 8},
-	}
-	data, err := json.Marshal(v)
-	if err != nil {
-		log.Fatal(err)
-	}
+	/*
+		v := &voteMessage{
+			UserAddress: "0x931d387731bbbc988b312206c74f77d004d6b84b",
+			Period:      2,
+			Images:      []int{2, 5, 6, 7, 8},
+		}
+		data, err := json.Marshal(v)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	fmt.Printf("%s\n", string(data))
+
+		fmt.Printf("%s\n", string(data))
+	*/
 
 	bindAddress := "localhost:8080"
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("images"))))
