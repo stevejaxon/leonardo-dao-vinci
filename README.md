@@ -4,5 +4,7 @@
 ## User Interface
 From the root directory run the following, long-running, command:s
 ```
-cd client;npm run start
+cd client
+npm install
+npm run start
 ```
