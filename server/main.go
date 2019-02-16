@@ -24,6 +24,10 @@ type voteMessage struct {
 	Images      []int  `json:"images"`
 }
 
+type iterationMessage struct {
+	Iteration string `json:"iteration"`
+}
+
 func main() {
 	flag.Parse()
 
@@ -79,7 +83,10 @@ func addCors(handleFunc func(w http.ResponseWriter, r *http.Request)) func(http.
 }
 
 func handleIteration(w http.ResponseWriter, r *http.Request) {
-	data, err := json.Marshal(strconv.Itoa(iteration))
+	i := iterationMessage{
+		Iteration: strconv.Itoa(iteration),
+	}
+	data, err := json.Marshal(i)
 	if err != nil {
 		http.Error(w, "Could not marshal period", http.StatusInternalServerError)
 		return
