@@ -48,7 +48,7 @@ func main() {
 	http.HandleFunc("/iteration", handleIteration)
 	http.HandleFunc("/vote", handleVotes)
 
-	fmt.Printf("Serving images at %s/images\n", bindAddress)
+	fmt.Printf("Serving images at %s/images/<iteration>/<image>\n", bindAddress)
 	fmt.Printf("Serving iteration at %s/iteration\n", bindAddress)
 	fmt.Printf("Accepting votes at %s/vote\n", bindAddress)
 	log.Fatal(http.ListenAndServe(":8080", nil))
