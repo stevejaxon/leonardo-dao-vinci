@@ -3,15 +3,14 @@ pragma solidity ^0.5.0;
 import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 import "openzeppelin-eth/contracts/token/ERC721/ERC721Mintable.sol";
 import "./ProxyRegistry.sol";
+import './Strings.sol';
 
 contract DaoVinciToken is ERC721Mintable, Ownable {
-
     // Used
     address proxyRegistryAddress;
 
     // Zepkit has a pattern of initializing instead of constructing instance
     function initialize(address _proxyRegistryAddress) initializer public {
-        _owner = msg.sender;
         proxyRegistryAddress = _proxyRegistryAddress;
     }
 
@@ -43,7 +42,7 @@ contract DaoVinciToken is ERC721Mintable, Ownable {
     {
         // Whitelist OpenSea proxy contract for easy trading.
         ProxyRegistry proxyRegistry = ProxyRegistry(proxyRegistryAddress);
-        if (proxyRegistry.proxies(owner) == operator) {
+        if (address(proxyRegistry.proxies(owner)) == operator) {
             return true;
         }
 
