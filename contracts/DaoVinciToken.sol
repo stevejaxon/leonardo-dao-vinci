@@ -4,7 +4,7 @@ import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 import "openzeppelin-eth/contracts/token/ERC721/ERC721Mintable.sol";
 import "./ProxyRegistry.sol";
 
-contract DaoVinciToken is ERC721Mintable.sol, Ownable {
+contract DaoVinciToken is ERC721Mintable, Ownable {
 
     // Used
     address proxyRegistryAddress;
@@ -18,14 +18,14 @@ contract DaoVinciToken is ERC721Mintable.sol, Ownable {
   /**
    * @dev Returns an URI for a given token ID
    */
-    function tokenURI(uint256 _tokenId) public view returns (string) {
+    function tokenURI(uint256 _tokenId) public view returns (string memory) {
         return Strings.strConcat(
             baseTokenURI(),
             Strings.uint2str(_tokenId)
         );
     }
 
-    function baseTokenURI() public view returns (string) {
+    function baseTokenURI() public view returns (string memory) {
         return "https://opensea-creatures-api.herokuapp.com/api/creature/";
     }
 
