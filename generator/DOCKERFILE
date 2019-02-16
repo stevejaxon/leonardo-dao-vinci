@@ -1,10 +1,4 @@
-FROM continuumio/anaconda:5.3.0 
-
-RUN rm -f src/*.html src/*.c
-RUN rm -f modules/*.pyc
-RUN rm -f *.so
-RUN rm -f *.pyc
-RUN rm -rf build
+FROM continuumio/anaconda3
 
 ADD . /code
 WORKDIR /code
@@ -12,23 +6,22 @@ WORKDIR /code
 # Pip 9.0.3 to avoid distutils uninstallation error
 RUN pip install --upgrade --force-reinstall pip==9.0.3
 
-# Problems installing pycairo from pip
-# RUN pip install git+https://github.com/pygobject/pycairo/releases/download/v1.18.0/pycairo-1.18.0.tar.gz
 RUN pip install git+https://github.com/inconvergent/iutils
 # Generate filenames - can remove in main files
 RUN pip install git+https://github.com/inconvergent/fn
+
 RUN pip install -r requirements.txt
 
-#Run install script
-#Run ./install
 RUN apt-get update
 RUN apt-get install gcc -y --fix-missing
 
-# Need gcc before installing zonemap
+# Need gcc before installing zonemap & twisted
+RUN pip install twisted==18.9.0
 RUN pip install git+https://github.com/inconvergent/zonemap
 
-# RUN python setup.py build_ext --inplace
-RUN python ./setup.py build_ext --inplace
-# RUN pip install differentialLine
+# Need this for pycairo to install from pip(!)
+RUN apt-get install libcairo2-dev libjpeg-dev libgif-dev -y
+RUN pip install pycairo==1.18.0
 
+RUN python3 ./setup.py build_ext --inplace
 # ENTRYPOINT [ "python", "main.py" ]

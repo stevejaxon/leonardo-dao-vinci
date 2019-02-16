@@ -5,20 +5,11 @@
 #    pip-compile --output-file requirements.txt requirements.in
 #
 argparse==1.4.0
-attrs==18.2.0             # via automat, twisted
-automat==0.7.0            # via twisted
 certifi==2018.11.29       # via requests
 chardet==3.0.4            # via requests
-constantly==15.1.0        # via twisted
-cython==0.29.5
 grin==1.2.1
-hyperlink==18.0.0         # via twisted
-idna==2.7
-incremental==17.5.0       # via twisted
-numpy==1.15.1
+idna==2.7                 # via requests
 pyhamcrest==1.9.0
 requests==2.21.0
-six==1.12.0               # via automat, pyhamcrest
-twisted==18.7.0
+six==1.12.0               # via pyhamcrest
 urllib3==1.24.1           # via requests
-zope.interface==4.6.0     # via twisted
