@@ -8,6 +8,7 @@ import CounterUI from "./components/Counter/index.js";
 import Wallet from "./components/Wallet/index.js";
 import Instructions from "./components/Instructions/index.js";
 import { Loader } from 'rimble-ui';
+import Voter from './components/Voter/Voter'
 
 import styles from './App.module.scss';
 
@@ -234,6 +235,10 @@ class App extends Component {
     );
   }
 
+  renderVoter(){
+    return (<Voter />)
+  }
+
   renderEVM() {
     return (
       <div className={styles.wrapper}>
@@ -266,6 +271,7 @@ class App extends Component {
       <div className={styles.App}>
         <Header />
           {this.state.route === '' && this.renderInstructions()}
+          {this.state.route === 'vote' && this.renderVoter()}
           {this.state.route === 'counter' && this.renderBody()}
           {this.state.route === 'evm' && this.renderEVM()}
           {this.state.route === 'faq' && this.renderFAQ()}
