@@ -1,0 +1,8 @@
+res/*
+*.swp
+*.*~
+*.pyc
+build
+__pycache__
+.genlog
+/output
