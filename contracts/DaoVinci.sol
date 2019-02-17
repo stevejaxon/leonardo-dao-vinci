@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma experimental ABIEncoderV2;
 
 import "zos-lib/contracts/Initializable.sol";
 import "openzeppelin-eth/contracts/ownership/Ownable.sol";
@@ -12,11 +12,11 @@ contract DaoVinci is Initializable, Ownable {
 
     mapping(address => uint) public balances;
 
-    function initialize(uint num) initializer public {
+    function initialize() initializer public {
         Ownable.initialize(msg.sender);
     }
 
-    function distributeRewards(Reward[] _rewards) public payable onlyOwner {
+    function distributeRewards(Reward[] memory _rewards) public payable onlyOwner {
         uint soldPrice = msg.value;
         uint totalRewards;
         for (uint i = 0; i < _rewards.length; i++) {
@@ -35,13 +35,13 @@ contract DaoVinci is Initializable, Ownable {
         msg.sender.transfer(balance);
     }
 
-    function withdrawOnBehalf(address usersAddress) public onlyOwner {
+    function withdrawOnBehalf(address payable usersAddress) public onlyOwner {
         uint balance = balances[usersAddress];
         balances[usersAddress] = 0;
         usersAddress.transfer(balance);
     }
 
-    function _increaseBalance(Reward _reward) private returns(bool) {
+    function _increaseBalance(Reward memory _reward) private returns(bool) {
         if (_reward.amount > 0) {
             balances[_reward.payee] = balances[_reward.payee] + _reward.amount;
             return true;

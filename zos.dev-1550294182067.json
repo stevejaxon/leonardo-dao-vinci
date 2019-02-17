@@ -273,6 +273,100 @@
         ],
         "storageDiff": []
       }
+    },
+    "DaoVinci": {
+      "address": "0x28f8f7A400B44260242c146f4Ed351BDE70FB1ce",
+      "constructorCode": "608060405234801561001057600080fd5b50610df9806100206000396000f3fe",
+      "bodyBytecodeHash": "8f50b911a5210d975ebcba614f88f04d8a8b331567707ea434ffd023d3e005fe",
+      "localBytecodeHash": "696690480823227797bfda17cdcd6330b33bdcc135002d7a5d18e855f459096c",
+      "deployedBytecodeHash": "696690480823227797bfda17cdcd6330b33bdcc135002d7a5d18e855f459096c",
+      "types": {
+        "t_bool": {
+          "id": "t_bool",
+          "kind": "elementary",
+          "label": "bool"
+        },
+        "t_uint256": {
+          "id": "t_uint256",
+          "kind": "elementary",
+          "label": "uint256"
+        },
+        "t_array:50<t_uint256>": {
+          "id": "t_array:50<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "50",
+          "kind": "array",
+          "label": "uint256[50]"
+        },
+        "t_address": {
+          "id": "t_address",
+          "kind": "elementary",
+          "label": "address"
+        },
+        "t_mapping<t_uint256>": {
+          "id": "t_mapping<t_uint256>",
+          "valueType": "t_uint256",
+          "label": "mapping(key => uint256)",
+          "kind": "mapping"
+        }
+      },
+      "storage": [
+        {
+          "contract": "Initializable",
+          "path": "zos-lib/contracts/Initializable.sol",
+          "label": "initialized",
+          "astId": 1920,
+          "type": "t_bool",
+          "src": "757:24:20"
+        },
+        {
+          "contract": "Initializable",
+          "path": "zos-lib/contracts/Initializable.sol",
+          "label": "initializing",
+          "astId": 1922,
+          "type": "t_bool",
+          "src": "876:25:20"
+        },
+        {
+          "contract": "Initializable",
+          "path": "zos-lib/contracts/Initializable.sol",
+          "label": "______gap",
+          "astId": 1971,
+          "type": "t_array:50<t_uint256>",
+          "src": "1891:29:20"
+        },
+        {
+          "contract": "Ownable",
+          "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
+          "label": "_owner",
+          "astId": 763,
+          "type": "t_address",
+          "src": "302:22:11"
+        },
+        {
+          "contract": "Ownable",
+          "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
+          "label": "______gap",
+          "astId": 874,
+          "type": "t_array:50<t_uint256>",
+          "src": "2186:29:11"
+        },
+        {
+          "contract": "DaoVinci",
+          "path": "contracts/DaoVinci.sol",
+          "label": "balances",
+          "astId": 71,
+          "type": "t_mapping<t_uint256>",
+          "src": "263:40:1"
+        }
+      ],
+      "warnings": {
+        "hasConstructor": false,
+        "hasSelfDestruct": false,
+        "hasDelegateCall": false,
+        "hasInitialValuesInDeclarations": false,
+        "uninitializedBaseContracts": []
+      }
     }
   },
   "solidityLibs": {},
@@ -287,6 +381,13 @@
         "address": "0x63eD9318628D26BdCB15df58B53BB27231D1B227",
         "version": "0.1.0",
         "implementation": "0x5F9d8f5c2648220BC45ba9eEa6adB8C389204943"
+      }
+    ],
+    "zepkit/DaoVinci": [
+      {
+        "address": "0xcC492680E237c22CC7098311831dEa36085ac80E",
+        "version": "0.1.0",
+        "implementation": "0x28f8f7A400B44260242c146f4Ed351BDE70FB1ce"
       }
     ]
   },

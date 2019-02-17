@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "contracts": {
     "ProxyRegistry": "ProxyRegistry",
-    "DaoVinciToken": "DaoVinciToken"
+    "DaoVinciToken": "DaoVinciToken",
+    "DaoVinci": "DaoVinci"
   }
 }
