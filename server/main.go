@@ -20,7 +20,7 @@ var (
 
 type voteMessage struct {
 	UserAddress string `json:"user_address"`
-	Period      int    `json:"period"`
+	Iteration   int    `json:"iteration"`
 	Images      []int  `json:"images"`
 }
 
@@ -44,20 +44,6 @@ func main() {
 		}
 	}
 
-	/*
-		v := &voteMessage{
-			UserAddress: "0x931d387731bbbc988b312206c74f77d004d6b84b",
-			Period:      2,
-			Images:      []int{2, 5, 6, 7, 8},
-		}
-		data, err := json.Marshal(v)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-
-		fmt.Printf("%s\n", string(data))
-	*/
 	imageHandler := http.StripPrefix("/images/", http.FileServer(http.Dir("images")))
 	imageHandlerFunc := func(w http.ResponseWriter, r *http.Request) {
 		imageHandler.ServeHTTP(w, r)
@@ -66,7 +52,7 @@ func main() {
 	bindAddress := fmt.Sprintf("localhost:%s", *port)
 	http.HandleFunc("/images/", addCors(imageHandlerFunc))
 	http.HandleFunc("/iteration", addCors(handleIteration))
-	http.HandleFunc("/vote", handleVotes)
+	http.HandleFunc("/vote", addCors(handleVotes))
 
 	fmt.Printf("Current iteration: %d\n", iteration)
 	fmt.Printf("Serving images at %s/images/<iteration>/<image>\n", bindAddress)
@@ -88,7 +74,7 @@ func handleIteration(w http.ResponseWriter, r *http.Request) {
 	}
 	data, err := json.Marshal(i)
 	if err != nil {
-		http.Error(w, "Could not marshal period", http.StatusInternalServerError)
+		http.Error(w, "Could not marshal iteration", http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -98,10 +84,14 @@ func handleIteration(w http.ResponseWriter, r *http.Request) {
 
 func handleVotes(w http.ResponseWriter, r *http.Request) {
 	content, err := ioutil.ReadAll(r.Body)
+	fmt.Printf("content: %s\n", string(content))
 	v := &voteMessage{}
 	err = json.Unmarshal(content, v)
 	if err != nil {
-		http.Error(w, "Could not unmarshal votes message", http.StatusBadRequest)
+		errmsg := "Could not unmarshal votes message"
+		fmt.Printf("%s\n", errmsg)
+		http.Error(w, errmsg, http.StatusBadRequest)
+		fmt.Printf("offending content: %s\n", string(content))
 		return
 	}
 
@@ -109,7 +99,9 @@ func handleVotes(w http.ResponseWriter, r *http.Request) {
 	for _, voters := range votes {
 		_, ok := voters[v.UserAddress]
 		if ok {
-			http.Error(w, fmt.Sprintf("User %q has already voted in this iteration", v.UserAddress), http.StatusBadRequest)
+			errmsg := fmt.Sprintf("User %q has already voted in this iteration", v.UserAddress)
+			fmt.Printf("%s\n", errmsg)
+			http.Error(w, errmsg, http.StatusBadRequest)
 			return
 		}
 	}
