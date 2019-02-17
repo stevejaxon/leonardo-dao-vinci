@@ -91,7 +91,7 @@
         "id": 2,
         "nodeType": "ImportDirective",
         "scope": 55,
-        "sourceUnit": 1841,
+        "sourceUnit": 1997,
         "src": "87:45:0",
         "symbolAliases": [],
         "unitAlias": ""
@@ -105,10 +105,10 @@
               "id": 3,
               "name": "Initializable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 1840,
+              "referencedDeclaration": 1996,
               "src": "154:13:0",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Initializable_$1840",
+                "typeIdentifier": "t_contract$_Initializable_$1996",
                 "typeString": "contract Initializable"
               }
             },
@@ -118,7 +118,7 @@
           }
         ],
         "contractDependencies": [
-          1840
+          1996
         ],
         "contractKind": "contract",
         "documentation": null,
@@ -126,7 +126,7 @@
         "id": 54,
         "linearizedBaseContracts": [
           54,
-          1840
+          1996
         ],
         "name": "Counter",
         "nodeType": "ContractDefinition",
@@ -221,7 +221,7 @@
                         "name": "msg",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1855,
+                        "referencedDeclaration": 2011,
                         "src": "335:3:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_magic_message",
@@ -314,7 +314,7 @@
                   "name": "initializer",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 1821,
+                  "referencedDeclaration": 1977,
                   "src": "301:11:0",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -703,7 +703,7 @@
         "id": 2,
         "nodeType": "ImportDirective",
         "scope": 55,
-        "sourceUnit": 1841,
+        "sourceUnit": 1997,
         "src": "87:45:0",
         "symbolAliases": [],
         "unitAlias": ""
@@ -717,10 +717,10 @@
               "id": 3,
               "name": "Initializable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 1840,
+              "referencedDeclaration": 1996,
               "src": "154:13:0",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Initializable_$1840",
+                "typeIdentifier": "t_contract$_Initializable_$1996",
                 "typeString": "contract Initializable"
               }
             },
@@ -730,7 +730,7 @@
           }
         ],
         "contractDependencies": [
-          1840
+          1996
         ],
         "contractKind": "contract",
         "documentation": null,
@@ -738,7 +738,7 @@
         "id": 54,
         "linearizedBaseContracts": [
           54,
-          1840
+          1996
         ],
         "name": "Counter",
         "nodeType": "ContractDefinition",
@@ -833,7 +833,7 @@
                         "name": "msg",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1855,
+                        "referencedDeclaration": 2011,
                         "src": "335:3:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_magic_message",
@@ -926,7 +926,7 @@
                   "name": "initializer",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 1821,
+                  "referencedDeclaration": 1977,
                   "src": "301:11:0",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -1294,7 +1294,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-02-16T19:56:22.125Z",
+  "updatedAt": "2019-02-17T07:28:45.654Z",
   "devdoc": {
     "methods": {}
   },
