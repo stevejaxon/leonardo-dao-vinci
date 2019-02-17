@@ -20,7 +20,7 @@ var (
 
 type voteMessage struct {
 	UserAddress string `json:"user_address"`
-	Period      int    `json:"period"`
+	Iteration   int    `json:"iteration"`
 	Images      []int  `json:"images"`
 }
 
@@ -88,7 +88,7 @@ func handleIteration(w http.ResponseWriter, r *http.Request) {
 	}
 	data, err := json.Marshal(i)
 	if err != nil {
-		http.Error(w, "Could not marshal period", http.StatusInternalServerError)
+		http.Error(w, "Could not marshal iteration", http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
