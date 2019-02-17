@@ -9,10 +9,16 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
 )
 
 var (
-	iteration = 1
+	// This will be modified by multiple routines
+	iteration = atomicInt{
+		val: 0,
+		mu:  sync.RWMutex{},
+	}
+
 	// maps image number to a set of user adresses that voted for it
 	votes = make(map[int]map[string]struct{})
 	port  = flag.String("port", "8080", "The port that the server will bind on")
@@ -33,16 +39,18 @@ func main() {
 
 	content, err := ioutil.ReadFile("iteration")
 	if err == nil {
-		iteration, err = strconv.Atoi(string(content))
+		num, err := strconv.Atoi(string(content))
 		if err != nil {
 			log.Fatalf("expecting integer defined in iteration file, instead got %s", string(content))
 		}
-	} else {
-		err := ioutil.WriteFile("iteration", []byte(strconv.Itoa(iteration)), os.ModePerm)
-		if err != nil {
-			log.Fatalf("could not persist iteration file: %v", err)
+		iteration = atomicInt{
+			val: num,
+			mu:  sync.RWMutex{},
 		}
+
 	}
+
+	go generateArt()
 
 	imageHandler := http.StripPrefix("/images/", http.FileServer(http.Dir("images")))
 	imageHandlerFunc := func(w http.ResponseWriter, r *http.Request) {
@@ -61,6 +69,41 @@ func main() {
 	log.Fatal(http.ListenAndServe(bindAddress, nil))
 }
 
+// Runs in perpetuity
+func generateArt() {
+	for {
+		println()
+		for im := 1; im < 11; im++ {
+			fmt.Printf("Generating image %d\n", im)
+		}
+
+		iteration.Inc()
+		i := iteration.Get()
+		fmt.Printf("Iteration: %d\n", i)
+
+		err := ioutil.WriteFile("iteration", []byte(strconv.Itoa(i)), os.ModePerm)
+		if err != nil {
+			fmt.Printf("could not persist iteration file: %v", err)
+		}
+
+		err = os.Chdir("images")
+		if err != nil {
+			fmt.Printf("could not cd to images: %v", err)
+		}
+		err = os.Symlink("test_images", fmt.Sprintf("%d", i))
+		if err != nil {
+			fmt.Printf("could not symlink test_images: %v", err)
+		}
+		err = os.Chdir("..")
+		if err != nil {
+			fmt.Printf("could not cd to .. : %v", err)
+		}
+		fmt.Printf("Press enter to move to the next iteration\n")
+		fmt.Scanln()
+	}
+
+}
+
 func addCors(handleFunc func(w http.ResponseWriter, r *http.Request)) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -70,7 +113,7 @@ func addCors(handleFunc func(w http.ResponseWriter, r *http.Request)) func(http.
 
 func handleIteration(w http.ResponseWriter, r *http.Request) {
 	i := iterationMessage{
-		Iteration: strconv.Itoa(iteration),
+		Iteration: strconv.Itoa(iteration.Get()),
 	}
 	data, err := json.Marshal(i)
 	if err != nil {
@@ -116,4 +159,21 @@ func handleVotes(w http.ResponseWriter, r *http.Request) {
 		voters[v.UserAddress] = struct{}{}
 	}
 	w.WriteHeader(http.StatusOK)
+}
+
+type atomicInt struct {
+	mu  sync.RWMutex
+	val int
+}
+
+func (s *atomicInt) Get() int {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.val
+}
+
+func (s *atomicInt) Inc() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.val++
 }
