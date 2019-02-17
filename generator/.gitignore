@@ -1,4 +1,5 @@
 res/*
+!res/.empty
 *.swp
 *.*~
 profile.profile
