@@ -9,6 +9,8 @@ from numpy import arange
 from numpy import zeros
 from numpy import column_stack
 
+import argparse
+
 BG = [1,1,1,1]
 
 GAMMA = 1.5
@@ -69,13 +71,19 @@ def spline_iterator():
 
 
 def main():
+
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--4-int-colour-list', nargs='+', type=int)
+
   import sys, traceback
   from fn import Fn
   from sand import Sand
 
+  rgba_list = parser.parse_args()._get_args()
+
   sand = Sand(SIZE)
   sand.set_bg(BG)
-  sand.set_rgba(FRONT)
+  sand.set_rgba(rgba_list)
 
   fn = Fn(prefix='./res/', postfix='.png')
   si = spline_iterator()
@@ -84,7 +92,7 @@ def main():
     try:
       itt, xy = next(si)
       sand.paint_dots(xy)
-      if not itt%(500*GRID_Y):
+      if not itt%(5000*GRID_Y):
         print(itt)
         sand.write_to_png(fn.name(), GAMMA)
     except Exception as e:
