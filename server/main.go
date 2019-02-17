@@ -1,15 +1,28 @@
 package main
 
 import (
+	"context"
+	"crypto/ecdsa"
+	"crypto/rand"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/big"
 	"net/http"
 	"os"
+	"sort"
 	"strconv"
+	"strings"
 	"sync"
+
+	"github.com/casinocats/leonardo-dao-vinci/server/dvtoken"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/moby/moby/pkg/namesgenerator"
 )
 
 var (
@@ -20,8 +33,16 @@ var (
 	}
 
 	// maps image number to a set of user adresses that voted for it
-	votes = make(map[int]map[string]struct{})
-	port  = flag.String("port", "8080", "The port that the server will bind on")
+	votes                   = make(map[int]map[string]struct{})
+	port                    = flag.String("port", "8080", "The port that the server will bind on")
+	imageStore              = &diskStore{"images"}
+	metaStore               = &diskStore{"metadata"}
+	mintedImageStore        = &diskStore{"minted_images"}
+	imageCount              = 10
+	client                  *ethclient.Client
+	privateKey              *ecdsa.PrivateKey
+	generatorAccountAddress common.Address
+	nonce                   uint64
 )
 
 type voteMessage struct {
@@ -50,6 +71,7 @@ func main() {
 
 	}
 
+	setupEth()
 	go generateArt()
 
 	imageHandler := http.StripPrefix("/images/", http.FileServer(http.Dir("images")))
@@ -57,11 +79,23 @@ func main() {
 		imageHandler.ServeHTTP(w, r)
 	}
 
-	bindAddress := fmt.Sprintf("localhost:%s", *port)
+	mintedImageHandler := http.StripPrefix("/minted_images/", http.FileServer(http.Dir("minted_images")))
+	mintedImageHandlerFunc := func(w http.ResponseWriter, r *http.Request) {
+		mintedImageHandler.ServeHTTP(w, r)
+	}
+
+	metadataHandler := http.StripPrefix("/metadata/", http.FileServer(http.Dir("metadata")))
+	metadataHandlerFunc := func(w http.ResponseWriter, r *http.Request) {
+		metadataHandler.ServeHTTP(w, r)
+	}
+
 	http.HandleFunc("/images/", addCors(imageHandlerFunc))
+	http.HandleFunc("/minted_images/", addCors(mintedImageHandlerFunc))
+	http.HandleFunc("/metadata/", addCors(metadataHandlerFunc))
 	http.HandleFunc("/iteration", addCors(handleIteration))
 	http.HandleFunc("/vote", addCors(handleVotes))
 
+	bindAddress := fmt.Sprintf("localhost:%s", *port)
 	fmt.Printf("Current iteration: %d\n", iteration)
 	fmt.Printf("Serving images at %s/images/<iteration>/<image>\n", bindAddress)
 	fmt.Printf("Serving iteration at %s/iteration\n", bindAddress)
@@ -73,15 +107,15 @@ func main() {
 func generateArt() {
 	for {
 		println()
-		for im := 1; im < 11; im++ {
-			fmt.Printf("Generating image %d\n", im)
+		for im := 0; im < imageCount; im++ {
+			fmt.Printf("Generating image %d\n", im+1)
 		}
 
 		iteration.Inc()
-		i := iteration.Get()
-		fmt.Printf("Iteration: %d\n", i)
+		it := iteration.Get()
+		fmt.Printf("Iteration: %d\n", it)
 
-		err := ioutil.WriteFile("iteration", []byte(strconv.Itoa(i)), os.ModePerm)
+		err := ioutil.WriteFile("iteration", []byte(strconv.Itoa(it)), os.ModePerm)
 		if err != nil {
 			fmt.Printf("could not persist iteration file: %v", err)
 		}
@@ -90,7 +124,7 @@ func generateArt() {
 		if err != nil {
 			fmt.Printf("could not cd to images: %v", err)
 		}
-		err = os.Symlink("test_images", fmt.Sprintf("%d", i))
+		err = os.Symlink("test_images", fmt.Sprintf("%d", it))
 		if err != nil {
 			fmt.Printf("could not symlink test_images: %v", err)
 		}
@@ -99,7 +133,24 @@ func generateArt() {
 			fmt.Printf("could not cd to .. : %v", err)
 		}
 		fmt.Printf("Press enter to move to the next iteration\n")
+		// hard code minting
 		fmt.Scanln()
+		// Calculate winners
+		imageIDs := make([]int, imageCount)
+		// generate the image ids
+		for i, _ := range imageIDs {
+			imageIDs[i] = i + 1
+		}
+
+		// sort imageIDs
+		sort.Slice(imageIDs, func(i, j int) bool {
+			// sort descending
+			return len(votes[i]) > len(votes[j])
+		},
+		)
+		for i := 0; i < 3; i++ {
+			mintToken(it, imageIDs[i])
+		}
 	}
 
 }
@@ -158,6 +209,13 @@ func handleVotes(w http.ResponseWriter, r *http.Request) {
 		}
 		voters[v.UserAddress] = struct{}{}
 	}
+
+	fmt.Printf("Vote Summary:")
+	for i := 0; i < imageCount; i++ {
+		imNum := i + 1
+		fmt.Printf("\nImage %d: %d", imNum, len(votes[imNum]))
+
+	}
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -176,4 +234,174 @@ func (s *atomicInt) Inc() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.val++
+}
+
+func setupEth() {
+
+	var err error
+	client, err = ethclient.Dial("https://rinkeby.infura.io")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	privateKey, err = crypto.HexToECDSA("d68790fcaaaed828a6bc2f4ae45764c25e1d193936202bf0039ef8f936d2127f")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	publicKey := privateKey.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		log.Fatal("error casting public key to ECDSA")
+	}
+
+	// my  contractAddress
+	generatorAccountAddress = crypto.PubkeyToAddress(*publicKeyECDSA)
+	nonce, err = client.PendingNonceAt(context.Background(), generatorAccountAddress)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+// mintTokens mints a token for the provided image id and iteration and then
+// puts it up for sale on opensea.
+func mintToken(iteration, imageNum int) {
+
+	gasPrice, err := client.SuggestGasPrice(context.Background())
+	if err != nil {
+		log.Fatalf("problem getting suggested gas price: %v", err)
+	}
+
+	auth := bind.NewKeyedTransactor(privateKey)
+	auth.Nonce = big.NewInt(int64(nonce))
+	auth.Value = big.NewInt(0)     // in wei
+	auth.GasLimit = uint64(300000) // in units
+	auth.GasPrice = gasPrice
+	// contract destination contractAddress
+	contractAddress := common.HexToAddress("0x100a1698c3fbb4a1f3b2ed74b5e39741ad233e89")
+	instance, err := dvtoken.NewDaoVinciToken(contractAddress, client)
+	if err != nil {
+		log.Fatalf("error creating new DaoVinciToken: %v", err)
+	}
+
+	tokenID := &big.Int{}
+	idBytes := make([]byte, 32)
+	rand.Read(idBytes)
+	if err != nil {
+		log.Fatalf("error reading from random: %v", err)
+	}
+
+	tokenID.SetBytes(idBytes)
+
+	tokenString := fmt.Sprintf("%X", idBytes)
+	metadataURI := "http://daovinci.ngrok.io/metadata/" + tokenString
+
+	a := []attribute{
+		{
+			TraitType: "artist",
+			Value:     "Leonardo Dao Vinci",
+		},
+		{
+			DisplayType: "number",
+			TraitType:   "prints",
+			Value:       1,
+		},
+		{
+			DisplayType: "number",
+			TraitType:   "iteration",
+			Value:       2,
+		},
+	}
+
+	name := namesgenerator.GetRandomName(0)
+	parts := strings.Split(name, "_")
+	for i, p := range parts {
+		parts[i] = strings.Title(p)
+	}
+	name = strings.Join(parts, " ")
+
+	m := metadata{
+		Attributes:  a,
+		Description: "Generated AI art",
+		ExternalUrl: "https://rinkeby.opensea.io/assets/0x100a1698c3fbb4a1f3b2ed74b5e39741ad233e89/" + tokenString,
+		Image:       "http://daovinci.ngrok.io/minted_images/" + tokenString + ".png",
+		Name:        name,
+	}
+	data, err := json.Marshal(m)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	metaStore.Put(tokenString, data)
+
+	mintedImageStore.Put(tokenString+".png", imageStore.Get(fmt.Sprintf("%d/%d.png", iteration, imageNum)))
+
+	tx, err := instance.MintWithTokenURI(auth, generatorAccountAddress, tokenID, metadataURI)
+	if err != nil {
+		log.Fatalf("error minting new DaoVinciToken: %v", err)
+	}
+	nonce++
+	fmt.Printf("tx sent: %s\n", tx.Hash().Hex()) // tx sent: 0x8d490e535678e9a24360e955d75b27ad307bdfb97a1dca51d0f3035dcee3e870
+
+	// Post the token to opensea
+
+	_, err = http.Get("http://localhost:3001/auction/token/" + tokenString)
+	if err != nil {
+		log.Fatalf("error putting new token on opensea: %v", err)
+	}
+
+}
+
+type metadata struct {
+	Description string      `json:"description"`
+	ExternalUrl string      `json:"external_url"`
+	Image       string      `json:"image"`
+	Name        string      `json:"name"`
+	Attributes  []attribute `json:"attributes"`
+}
+
+type attribute struct {
+	TraitType   string      `json:"trait_type"`
+	DisplayType string      `json:"display_type,omitempty"`
+	Value       interface{} `json:"value"`
+}
+
+/*
+"attributes": [
+    {
+      "trait_type": "artist",
+      "value": "Leonardo Dao Vinci"
+    },
+    {
+      "display_type": "number",
+      "trait_type": "prints",
+      "value": 1
+    }
+    {
+      "display_type": "number",
+      "trait_type": "generation",
+      "value": 2
+    }
+  ]
+*/
+
+type diskStore struct {
+	dir string
+}
+
+func (ms *diskStore) Get(token string) []byte {
+	data, err := ioutil.ReadFile(ms.dir + "/" + token)
+	if err != nil {
+		fmt.Printf("%v\n", err)
+		return nil
+	}
+	return data
+}
+
+func (ms *diskStore) Put(token string, data []byte) {
+	err := ioutil.WriteFile(ms.dir+"/"+token, data, os.ModePerm)
+	if err != nil {
+		fmt.Printf("%v\n", err)
+	}
+
 }
