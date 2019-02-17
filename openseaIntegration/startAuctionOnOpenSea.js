@@ -1,19 +1,26 @@
-require('dotenv').config();
-const opensea = require('opensea-js');
+const opensea = require('opensea-js')
 const OpenSeaPort = opensea.OpenSeaPort;
 const Network = opensea.Network;
 
-const MnemonicWalletSubprovider = require('@0x/subproviders').MnemonicWalletSubprovider;
-const RPCSubprovider = require('web3-provider-engine/subproviders/rpc');
-const Web3ProviderEngine = require('web3-provider-engine');
-const MNEMONIC = process.env.MNENOMIC;
-const INFURA_KEY = 'Iw4pUdWfzz9ZxddqpXrS';
-const NETWORK = Network.Rinkeby;
+const MnemonicWalletSubprovider = require('@0x/subproviders').MnemonicWalletSubprovider
+const RPCSubprovider = require('web3-provider-engine/subproviders/rpc')
+const Web3ProviderEngine = require('web3-provider-engine')
+const MNEMONIC = process.env.MNEMONIC
+const INFURA_KEY = process.env.INFURA_KEY
+const NFT_CONTRACT_ADDRESS = process.env.NFT_CONTRACT_ADDRESS
+const OWNER_ADDRESS = process.env.OWNER_ADDRESS
+const NETWORK = process.env.NETWORK
+const DUTCH_AUCTION_START_AMOUNT = 100;
+const DUTCH_AUCTION_END_AMOUNT = 0;
 
+if (!MNEMONIC || !INFURA_KEY || !NETWORK || !OWNER_ADDRESS || !NFT_CONTRACT_ADDRESS) {
+    console.error("Please set a mnemonic, infura key, owner, network, API key, and factory contract address.")
+    return
+}
 const BASE_DERIVATION_PATH = `44'/60'/0'/0`;
-const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({ mnemonic: MNEMONIC, baseDerivationPath: BASE_DERIVATION_PATH});
+const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({ mnemonic: MNEMONIC, baseDerivationPath: BASE_DERIVATION_PATH})
 const infuraRpcSubprovider = new RPCSubprovider({
-    rpcUrl: 'https://rinkeby.infura.io/' + INFURA_KEY,
+    rpcUrl: 'https://' + NETWORK + '.infura.io/' + INFURA_KEY,
 });
 
 const providerEngine = new Web3ProviderEngine()
@@ -23,25 +30,14 @@ providerEngine.start();
 
 const seaport = new OpenSeaPort(providerEngine, {
     networkName: Network.Rinkeby
-}, (arg) => console.log(arg));
+}, (arg) => console.log(arg))
 
-const tokenAddress = '0x100a1698c3fbb4a1f3b2ed74b5e39741ad233e89';
-const accountAddress = '0xf0f2077bc2361af6ae805609111c2b7f1594a74b';
-const startAmount = 100;
-const endAmount = 0;
+async function main() {
 
-class OpenSeaAuction {
-
-    async auction(tokenId) {
-        console.log('about to call createSellOrder')
-        // Expire this auction one day from now
-        const expirationTime = (Date.now() / 1000 + 60 * 60 * 24);
-        // If `endAmount` is specified, the order will decline in value to that amount until `expirationTime`. Otherwise, it's a fixed-price order.
-        return await seaport.createSellOrder({ tokenId, tokenAddress, accountAddress, startAmount, endAmount, expirationTime });
-    }
+    const expirationTime = (Date.now() / 1000 + 60 * 60 * 24);
+    // If `endAmount` is specified, the order will decline in value to that amount until `expirationTime`. Otherwise, it's a fixed-price order.
+    return await seaport.createSellOrder({ tokenId: 0, tokenAddress: NFT_CONTRACT_ADDRESS, accountAddress: OWNER_ADDRESS, startAmount: DUTCH_AUCTION_START_AMOUNT, endAmount: DUTCH_AUCTION_END_AMOUNT, expirationTime: expirationTime });
+    // TODO: Incremental prices example.
 }
 
-module.exports = OpenSeaAuction;
-
-
-
+main()
