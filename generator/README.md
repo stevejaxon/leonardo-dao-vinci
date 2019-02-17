@@ -1,5 +1,5 @@
 
-# Van DAO Generator
+# DAO Vinci Generator
 
 ## Buidl
 
