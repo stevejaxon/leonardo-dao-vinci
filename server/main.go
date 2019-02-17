@@ -66,7 +66,7 @@ func main() {
 	bindAddress := fmt.Sprintf("localhost:%s", *port)
 	http.HandleFunc("/images/", addCors(imageHandlerFunc))
 	http.HandleFunc("/iteration", addCors(handleIteration))
-	http.HandleFunc("/vote", handleVotes)
+	http.HandleFunc("/vote", addCors(handleVotes))
 
 	fmt.Printf("Current iteration: %d\n", iteration)
 	fmt.Printf("Serving images at %s/images/<iteration>/<image>\n", bindAddress)
