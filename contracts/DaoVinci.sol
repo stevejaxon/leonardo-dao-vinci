@@ -5,6 +5,9 @@ import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 
 contract DaoVinci is Initializable, Ownable {
 
+    event RewardDistributed(address payee, uint amount);
+    event BalanceWithdrawn(address payee, uint amount);
+
     struct Reward {
         address payee;
         uint amount;
@@ -24,6 +27,7 @@ contract DaoVinci is Initializable, Ownable {
             bool balanceIncreased = _increaseBalance(reward);
             if (balanceIncreased) {
                 totalRewards = totalRewards + reward.amount;
+                emit RewardDistributed(reward.payee, reward.amount);
             }
         }
         require(soldPrice >= totalRewards);
@@ -39,6 +43,7 @@ contract DaoVinci is Initializable, Ownable {
         uint balance = balances[usersAddress];
         balances[usersAddress] = 0;
         usersAddress.transfer(balance);
+        emit BalanceWithdrawn(usersAddress, balance);
     }
 
     function _increaseBalance(Reward memory _reward) private returns(bool) {
